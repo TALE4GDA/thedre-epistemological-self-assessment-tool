@@ -1,0 +1,106 @@
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
+</head>
+<body>
+  <h1 class="md-typescale-display-medium">Quizz Epistemologie</h1>
+  <md-linear-progress id="progress" value="0"></md-linear-progress>
+  <form id="mainForm">
+    <p id="quizz" class="md-typescale-body-medium">Check out these controls in a form!</p>
+    <md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>
+    <md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>
+    <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>
+  </form>
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  </style>
+  <script>
+    NO_ANSWER = "X"
+    CURRENT_QUESTION = 0
+
+    questions = ["Comment définiriez-vous la nature de la réalité ?",
+    "Quelle est votre opinion sur la possibilité de connaître la réalité ?",
+    "Comment considérez-vous la production de la connaissance scientifique ?"
+    ]
+    answers = new Map()
+    for(q in questions)
+    {
+        answers.set(questions[q],NO_ANSWER)
+    }
+    console.log(answers)
+    update()
+
+    function update()
+    {
+        elem = document.getElementById("quizz")
+        elem.innerHTML = questions[CURRENT_QUESTION]
+
+        prog = document.getElementById("progress")
+        val = CURRENT_QUESTION/questions.length*1.0
+        prog.value = ""+ val
+
+        if(val == 1.0)
+            quizzEnd()
+    }
+
+    function quizzEnd()
+    {
+        elem = document.getElementById("quizz")
+        elem.innerHTML = "Le quizz est fini. Merci."
+        form = document.getElementById("mainForm")
+        form.remove()
+        //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
+    }
+
+    // @TODO
+    function getResultsByItems()
+    {
+        results = new Map()
+
+        for(let i = 0 ; i < CURRENT_QUESTION; i++)
+        {
+            answers.get(questions[i])
+        }
+        assert(true==false)
+    }
+
+    function Aclicked()
+    {
+        buttonClicked("A")
+    }
+
+    function Bclicked()
+    {
+        buttonClicked("B")
+    }
+
+    function Cclicked()
+    {
+        buttonClicked("C")
+    }
+
+    function buttonClicked(ans)
+    {
+        answers.set(questions[CURRENT_QUESTION], ans)
+        CURRENT_QUESTION++
+        update()
+    }
+  </script>
+</body>
