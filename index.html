@@ -166,7 +166,7 @@
         display = ""
         for(let[key,value] of symbCounter)
         {
-          display += "<p>"+key+" : "+value+"</p>"
+          display += '<p>'+key+' : <md-linear-progress id="progress" value="'+value/QUESTIONS.length+'"></md-linear-progress></p>'
         }
 
         QUIZZ_ELEMENT.innerHTML+=display
