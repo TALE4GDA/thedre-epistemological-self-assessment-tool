@@ -35,6 +35,10 @@
     NO_ANSWER = "X"
     CURRENT_QUESTION = 0
 
+    QUIZZ_ELEMENT = document.getElementById("mainForm")
+
+ 
+
     questions = ["Comment définiriez-vous la nature de la réalité ?",
     "Quelle est votre opinion sur la possibilité de connaître la réalité ?",
     "Comment considérez-vous la production de la connaissance scientifique ?",
@@ -65,13 +69,29 @@
             quizzEnd()
     }
 
+    function initQuizz()
+    {
+      QUIZZ_ELEMENT.innerHTML = '<p id="quizz" class="md-typescale-body-medium">Question</p>'+
+      '<md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>'+
+      '<md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>' +
+      '<md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>'
+
+      CURRENT_QUESTION = 0
+      update()
+    }
+
     function quizzEnd()
     {
-        elem = document.getElementById("quizz")
-        elem.innerHTML = "Le quizz est fini. Merci."
-        form = document.getElementById("mainForm")
-        form.remove()
+        QUIZZ_ELEMENT.innerHTML = '<p id="quizz" class="md-typescale-body-medium">Le quizz est fini.Merci.</p>'+
+        '<md-outlined-button type="reset" onclick="initQuizz()">Recommencer le quizz ?</md-outlined-button>'
+        
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
+    }
+
+    // This function is used to classify the epistemological stand of the user
+    function classify()
+    {
+      assert(true == false)
     }
 
     // @TODO
