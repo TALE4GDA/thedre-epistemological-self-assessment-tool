@@ -16,7 +16,7 @@
   
   <meta charset="utf-8">
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
-  <link rel="stylesheet" href="https://rawgit.com/tpreusse/radar-chart-d3/master/src/radar-chart.css">
+  <link rel="stylesheet" href="./radar-chart.css">
 
   <style>
   body {
@@ -41,7 +41,7 @@
   </style>
 
   <script src="http://d3js.org/d3.v3.js"></script>
-  <script src="https://rawgit.com/tpreusse/radar-chart-d3/master/src/radar-chart.js"></script>
+  <script src="./radar-chart.js"></script>
   <script>
     RadarChart.defaultConfig.color = function() {};
     RadarChart.defaultConfig.radius = 3;
@@ -429,7 +429,7 @@
     function displayRadar()
     {
       resAxes = [{className:"result", axes:Array.from(ANSWERED_CATEGORIES,function([key,val]) { return {axis:key, value:val}})}]
-      
+
       var chart = RadarChart.chart();
       var cfg = chart.config(); // retrieve default config
       var svg = d3.select('#radar').append('svg')
