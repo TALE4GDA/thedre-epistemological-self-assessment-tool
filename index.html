@@ -390,12 +390,18 @@
       }
     }
 
+    function maxOfAMap(mp)
+    {
+      return (Array.from(CATEGORIES, ([key,value]) => value).reduce((a,x) => a < x ? x : a ))
+    }
+
     function displayRadar()
     {
       resAxes = [{className:"result", axes:Array.from(ANSWERED_CATEGORIES,function([key,val]) { return {axis:key, value:val}})}]
-
+      
       var chart = RadarChart.chart();
       var cfg = chart.config(); // retrieve default config
+      cfg.maxValue = maxOfAMap(ANSWERED_CATEGORIES)
       var svg = d3.select('#radar').append('svg')
         .attr('width', cfg.w + cfg.w + 50)
         .attr('height', cfg.h + cfg.h / 4);
