@@ -49,42 +49,6 @@
     RadarChart.defaultConfig.h = 400;
   </script>
 
-<script>
-  var data = [
-    {
-      className: 'germany', // optional can be used for styling
-      axes: [
-        {axis: "strength", value: 13}, 
-        {axis: "intelligence", value: 6}, 
-        {axis: "charisma", value: 5},  
-        {axis: "dexterity", value: 9},  
-        {axis: "luck", value: 2}
-      ]
-    },
-    {
-      className: 'argentina',
-      axes: [
-        {axis: "strength", value: 6}, 
-        {axis: "intelligence", value: 7}, 
-        {axis: "charisma", value: 10},  
-        {axis: "dexterity", value: 13},  
-        {axis: "luck", value: 9}
-      ]
-    }
-  ];
-  function randomDataset() {
-    return data.map(function(d) {
-      return {
-        className: d.className,
-        axes: d.axes.map(function(axis) {
-          return {axis: axis.axis, value: Math.ceil(Math.random() * 10)};
-        })
-      };
-    });
-  }
-  </script>
-  
-
 </head>
 <body>
   <h1 class="md-typescale-display-medium">Quizz Epistemologie</h1>
