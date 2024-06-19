@@ -59,6 +59,7 @@
     <md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>
     <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>
   </form>
+  <div id="mybelief"></div>
   <div id="radar"></div>
   <style>
     form {
@@ -116,6 +117,64 @@
           shuffleArray(quizzButtons)
 
         QUIZZ_ELEMENT.innerHTML = quizzQ + quizzButtons.join("")
+        updateMyBelief()
+    }
+
+    function updateMyBelief()
+    {
+      let Final_Connectors = Array("Enfin, ", "Finalement, ", "Pour finir, ")
+      //let Opinion_Connectors = Array("je pense que ", "selon moi, ", "pour moi, ", "pour moi, je pense que ", "aussi, ", "il m'apparaît que ", "j'estime que ")
+      let Opinion_Connectors = Array("je pense que ", "il me semble que ", "pour moi, je pense que ", "il m'apparaît que ", "j'estime que ", "je croîs que", "j'estime que ")
+      let beliefString = Opinion_Connectors[Math.floor(Math.random()*(Opinion_Connectors.length-4))]//Pick only the first three ones
+      beliefString = beliefString.charAt(0).toUpperCase() + beliefString.slice(1)
+
+      let arrProp = []
+
+      for(let [key,value] of ANSWERS)
+      {
+        if(value == NO_ANSWER)
+          continue
+
+        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_title == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
+      }
+
+      //Below, formatting of the belief ==> Could be replaced by a GPT if available and used to tell a story!
+
+      for(let prop = 0 ; prop < arrProp.length-1 ; prop++)
+      {
+        if(prop!=0 && Math.random()>0.65)
+        {
+          let conn = Opinion_Connectors[Math.floor(Math.random()*Opinion_Connectors.length)]
+          conn = conn.charAt(0).toUpperCase() + conn.slice(1)
+          
+          beliefString += " "+conn+arrProp[prop]
+        }
+        else
+        {
+          let posLastDot = beliefString.lastIndexOf(".")
+          if(posLastDot == -1)
+            beliefString += arrProp[prop]
+          else
+            beliefString = beliefString.slice(0,posLastDot)+", que " + arrProp[prop]
+        }
+      }
+      //Adding the last element to belief. The format depends on how many elements are in the sentences
+      if(arrProp.length > 2)
+        beliefString += " " + Final_Connectors[Math.floor(Math.random()*Final_Connectors.length)]+Opinion_Connectors[Math.floor(Math.random()*Opinion_Connectors.length)]+arrProp[arrProp.length-1]
+      else if(arrProp.length > 1)
+      {
+        let posLastDot = beliefString.lastIndexOf(".")
+        beliefString = beliefString.slice(0,posLastDot)+ " et que "+ beliefString.slice(posLastDot+1) + arrProp[arrProp.length-1]
+      }
+      else
+        beliefString += arrProp[arrProp.length-1]
+
+      if(arrProp.length == 0)
+        beliefString = ""
+      
+      //console.log(arrProp)
+      let beliefDiv = document.getElementById("mybelief")
+      beliefDiv.innerHTML=beliefString
     }
 
     function initQuizz()
@@ -170,7 +229,6 @@
       
       for(let [key,value] of ANSWERS)
       {
-        //console.log(QUESTIONS.reduce((a,x) => x.q_title == key ? x : a).items.reduce((c,y)=> y.i_id == value ? y.categ : c.categ))
         for(let i in QUESTIONS)
         {
           if(QUESTIONS[i].q_title == key)
@@ -225,7 +283,7 @@
       q1 = { "q_title" : "Comment définiriez-vous la nature de la réalité ?",
           "items" : [
             {
-              "i_title": "La Réalité est objective et existe indépendamment de nos perceptions",
+              "i_title": "La Réalité est objective et existe indépendamment de nos perceptions.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -238,7 +296,7 @@
               ]
             },
             {
-              "i_title": "La réalité est en partie construite socialement et subjectivement interprétée",
+              "i_title": "La réalité est en partie construite socialement et subjectivement interprétée.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -247,7 +305,7 @@
               ]
             },
             {
-              "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde",
+              "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -294,8 +352,8 @@
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
+                  "i_symb" : "Réalisme Critique",
+                  "w" : 3
                 }
               ]
             }
@@ -394,7 +452,7 @@
         q5 = { "q_title" : "Comment évaluez-vous la validité de la connaissance scientifique produite ?",
       "items" : [
         {
-          "i_title": "Par leur capacité à prédire et à contrôler les phénomènes observables.",
+          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à prédire et à contrôler les phénomènes observables.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -407,7 +465,7 @@
               ]
         },
         {
-          "i_title": "Par leur capacité à être testées et potentiellement falsifiées.",
+          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à être testées et potentiellement falsifiées.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -420,7 +478,7 @@
               ]
         },
         {
-          "i_title": "Par leur utilité pratique et leur efficacité pour résoudre des problèmes réels.",
+          "i_title": "La validité d'une connaissance scientifique tient par son utilité pratique et son efficacité pour résoudre des problèmes réels.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -465,7 +523,7 @@
               ]
         },
         {
-          "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée",
+          "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée.",
 "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -501,7 +559,7 @@
               ]
         },
         {
-          "i_title": "Ils sont importants car ils influencent nos observations et interprétations.",
+          "i_title": "Les contextes sociaux et historiques sont importants car ils influencent nos observations et interprétations.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -514,7 +572,7 @@
               ]
         },
         {
-          "i_title": "Ils sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
+          "i_title": "Les contextes sociaux et historiques sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
