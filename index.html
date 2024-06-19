@@ -13,6 +13,42 @@
 
     document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
   </script>
+  
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+  <link rel="stylesheet" href="./radar-chart.css">
+
+  <style>
+  body {
+    padding: 20px;
+  }
+  </style>
+
+  <style>
+  .radar-chart .area {
+    fill-opacity: 0.7;
+  }
+  .radar-chart.focus .area {
+    fill-opacity: 0.3;
+  }
+  .radar-chart.focus .area.focused {
+    fill-opacity: 0.9;
+  }
+  .area.result, .result .circle {
+    fill: #ADD8E6;
+    stroke: none;
+  }
+  </style>
+
+  <script src="http://d3js.org/d3.v3.js"></script>
+  <script src="./radar-chart.js"></script>
+  <script>
+    RadarChart.defaultConfig.color = function() {};
+    RadarChart.defaultConfig.radius = 3;
+    RadarChart.defaultConfig.w = 400;
+    RadarChart.defaultConfig.h = 400;
+  </script>
+
 </head>
 <body>
   <h1 class="md-typescale-display-medium">Quizz Epistemologie</h1>
@@ -23,6 +59,7 @@
     <md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>
     <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>
   </form>
+  <div id="radar"></div>
   <style>
     form {
       display: flex;
@@ -40,10 +77,12 @@
     RANDOMIZE_QUESTIONS = true
     RANDOMIZE_ITEMS = true
 
+    CATEGORIES = new Map() //Used know the different categories existing to classify the user answers in the end. Used in the radar
+    ANSWERED_CATEGORIES = new Map()
+
     QUESTIONS = []
 
     loadQuestions()
-    
 
     // questions = ["Comment définiriez-vous la nature de la réalité ?",
     // "Quelle est votre opinion sur la possibilité de connaître la réalité ?",
@@ -55,12 +94,7 @@
     // "Comment percevez-vous la relation entre théorie et observation ?"
     // ]
 
-    ANSWERS = new Map()
-    for(q in QUESTIONS)
-    {
-        ANSWERS.set(QUESTIONS[q].q_title,NO_ANSWER)
-    }
-    
+        
     initQuizz()
 
     function update()
@@ -96,11 +130,19 @@
 
     function initQuizz()
     {
+      ANSWERS = new Map()
+      for(q in QUESTIONS)
+      {
+          ANSWERS.set(QUESTIONS[q].q_title,NO_ANSWER)
+      }
+
       if(RANDOMIZE_QUESTIONS)
         shuffleArray(QUESTIONS)
       
       QUIZZ_ELEMENT.addEventListener('click', addClick)
       CURRENT_QUESTION = 0
+
+      removeRadar()
       update()
     }
 
@@ -118,32 +160,31 @@
         '<md-outlined-button type="reset" onclick="initQuizz()">Recommencer le quizz ?</md-outlined-button>'
         
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
-        let symbCounter = answersToSymbMap()
+        updateAnsweredCategories()
         display = ""
-        for(let[key,value] of symbCounter)
+        for(let[key,value] of ANSWERED_CATEGORIES)
         {
           display += '<p>'+key+' : <md-linear-progress id="progress" value="'+value/QUESTIONS.length+'"></md-linear-progress></p>'
         }
 
         QUIZZ_ELEMENT.innerHTML+=display
-        
+        displayRadar()
     }
 
-    function answersToSymbMap()
+    function updateAnsweredCategories()
     {
-      let symbCounter = new Map()
+      ANSWERED_CATEGORIES = new Map()
+      for(let [key,val] of CATEGORIES)
+        ANSWERED_CATEGORIES.set(key,0)
 
-        for(let [key,value] of ANSWERS)
-        {
-          if(symbCounter.has(value))
-            symbCounter.set(value,symbCounter.get(value)+1)
-          else
-            symbCounter.set(value,1)
-        }
-      return symbCounter
+      for(let [key,value] of ANSWERS)
+      {
+        ANSWERED_CATEGORIES.set(value,ANSWERED_CATEGORIES.get(value)+1)
+      }
+      //return ANSWERED_CATEGORIES //@DEPRECATED return for legacy purpose
     }
 
-    // This function is used to classify the epistemological stand of the user
+    // @TODO This function is used to classify the epistemological stand of the user
     function classify()
     {
       assert(true == false)
@@ -177,15 +218,15 @@
           "items" : [
             {
               "i_title": "La Réalité est objective et existe indépendamment de nos perceptions",
-              "i_symb": "A"
+              "i_symb": "Post-Positivisme"
             },
             {
               "i_title": "La réalité est en partie construite socialement et subjectivement interprétée",
-              "i_symb": "B"
+              "i_symb": "Interprétativisme"
             },
             {
               "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde",
-              "i_symb" : "C"
+              "i_symb" : "Réalisme Critique"
             }
           ]
         }
@@ -194,15 +235,15 @@
           "items" : [
             {
               "i_title": "La réalité est connaissable de manière objective à travers des observations empiriques précises.",
-              "i_symb": "A"
+              "i_symb": "Post-Positivisme"
             },
             {
               "i_title": "La réalité est connaissable, mais nos observations sont influencées par nos théories et préjugés.",
-              "i_symb": "B"
+              "i_symb": "Constructivisme Pragmatique"
             },
             {
               "i_title": "La connaissance de la réalité est construite par les individus à travers leurs interactions et expériences pratiques.",
-              "i_symb" : "C"
+              "i_symb" : "Réalisme Critique"
             }
           ]
         }
@@ -210,15 +251,15 @@
       "items" : [
         {
           "i_title": "La connaissance scientifique est produite par l'application rigoureuse de méthodes empiriques et expérimentales.",
-          "i_symb": "A"
+          "i_symb": "Constructivisme Pragmatique"
         },
         {
           "i_title": "La connaissance scientifique est produite en reconnaissant et en testant continuellement les théories pour mieux comprendre les biais et les limitations.",
-          "i_symb": "B"
+          "i_symb": "Post-Positivisme"
         },
         {
           "i_title": "La connaissance scientifique est produite à travers un processus de co-construction sociale, où les interactions entre les chercheurs et les participants jouent un rôle crucial.",
-          "i_symb" : "C"
+          "i_symb" : "Interprétativisme"
         }
         
           ]
@@ -228,15 +269,15 @@
       "items" : [
         {
           "i_title": "Les valeurs personnelles doivent être mises de côté pour parvenir à une compréhension objective de la réalité.",
-          "i_symb": "A"
+          "i_symb": "Réalisme Critique"
         },
         {
           "i_title": "Les valeurs personnelles influencent inévitablement nos perspectives et nos interprétations.",
-          "i_symb": "B"
+          "i_symb": "Post-Positivisme"
         },
         {
           "i_title": "Les valeurs personnelles sont essentielles pour évaluer et interpréter les connaissances.",
-          "i_symb" : "C"
+          "i_symb" : "Interprétativisme"
         }
         
           ]
@@ -246,15 +287,15 @@
       "items" : [
         {
           "i_title": "Par leur capacité à prédire et à contrôler les phénomènes observables.",
-          "i_symb": "A"
+          "i_symb": "Constructivisme Pragmatique"
         },
         {
           "i_title": "Par leur capacité à être testées et potentiellement falsifiées.",
-          "i_symb": "B"
+          "i_symb": "Réalisme Critique"
         },
         {
           "i_title": "Par leur utilité pratique et leur efficacité pour résoudre des problèmes réels.",
-          "i_symb" : "C"
+          "i_symb" : "Interprétativisme"
         }
         
           ]
@@ -264,15 +305,15 @@
       "items" : [
         {
           "i_title": "La subjectivité doit être minimisée pour parvenir à une compréhension objective de la réalité.",
-          "i_symb": "A"
+          "i_symb": "Post-Positivisme"
         },
         {
           "i_title": "Les biais sont inévitables, et il est important de les reconnaître et de les gérer.",
-          "i_symb": "B"
+          "i_symb": "Constructivisme Pragmatique"
         },
         {
           "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée",
-          "i_symb" : "C"
+          "i_symb" : "Réalisme Critique"
         }
         
           ]
@@ -282,15 +323,15 @@
       "items" : [
         {
           "i_title": "Les contextes sociaux et historiques sont secondaires par rapport aux faits empiriques.",
-          "i_symb": "A"
+          "i_symb": "Post-Positivisme"
         },
         {
           "i_title": "Ils sont importants car ils influencent nos observations et interprétations.",
-          "i_symb": "B"
+          "i_symb": "Interprétativisme"
         },
         {
           "i_title": "Ils sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
-          "i_symb" : "C"
+          "i_symb" : "Constructivisme Pragmatique"
         }
         
           ]
@@ -300,15 +341,15 @@
       "items" : [
         {
           "i_title": "Les observations empiriques doivent guider et valider les théories.",
-          "i_symb": "A"
+          "i_symb": "Réalisme Critique"
         },
         {
           "i_title": "Les théories influencent nos observations et doivent être testées constamment.",
-          "i_symb": "B"
+          "i_symb": "Constructivisme Pragmatique"
         },
         {
           "i_title": "Les théories et les observations sont co-construites par les chercheurs et les participants.",
-          "i_symb" : "C"
+          "i_symb" : "Post-Positivisme"
         }
         
           ]
@@ -322,6 +363,23 @@
       QUESTIONS.push(q6)
       QUESTIONS.push(q7)
       QUESTIONS.push(q8)
+
+      updateAvailableCategories()
+    }
+
+    function updateAvailableCategories()
+    {
+      for(q in QUESTIONS)
+      {
+        for(i in QUESTIONS[q].items)
+        {
+          const csymb = QUESTIONS[q].items[i].i_symb
+          if(CATEGORIES.has(csymb))
+            CATEGORIES.set(csymb,CATEGORIES.get(csymb)+1)
+          else
+            CATEGORIES.set(csymb,1)
+        }
+      }
     }
 
     //TOOL
@@ -330,6 +388,50 @@
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
       }
+    }
+
+    function maxOfAMap(mp)
+    {
+      return (Array.from(CATEGORIES, ([key,value]) => value).reduce((a,x) => a < x ? x : a ))
+    }
+
+    function displayRadar()
+    {
+      resAxes = [{className:"result", axes:Array.from(ANSWERED_CATEGORIES,function([key,val]) { return {axis:key, value:val}})}]
+      
+      var chart = RadarChart.chart();
+      var cfg = chart.config(); // retrieve default config
+      cfg.maxValue = maxOfAMap(ANSWERED_CATEGORIES)
+      var svg = d3.select('#radar').append('svg')
+        .attr('width', cfg.w + cfg.w + 50)
+        .attr('height', cfg.h + cfg.h / 4);
+      svg.append('g').classed('single', 1).datum(resAxes).call(chart);
+      
+      // // many radars
+      // chart.config({w: cfg.w / 4, h: cfg.h / 4, axisText: false, levels: 0, circles: false});
+      // cfg = chart.config();
+      // function render() {
+      //   var game = svg.selectAll('g.game').data(
+      //     [
+      //       randomDataset(),
+      //       randomDataset(),
+      //       randomDataset(),
+      //       randomDataset()
+      //     ]
+      //   );
+      //   game.enter().append('g').classed('game', 1);
+      //   game
+      //     .attr('transform', function(d, i) { return 'translate('+((cfg.w * 4) + 50 + (i * cfg.w))+','+ (cfg.h * 1.3) +')'; })
+      //     .call(chart);
+      
+      //   setTimeout(render, 1000);
+      // }
+      //render();
+    }
+
+    function removeRadar()
+    {
+      var rad = d3.selectAll('svg').remove()
     }
   </script>
 </body>
