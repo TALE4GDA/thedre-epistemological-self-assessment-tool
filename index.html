@@ -1,5 +1,8 @@
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <script type="importmap">
     {
       "imports": {
@@ -25,6 +28,45 @@
   </style>
 
   <style>
+  #mybelief{
+    font-family: "Roboto";
+    font-weight: var(--md-outlined-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));
+    font-size:0.875rem;
+    font-style: italic;
+    color:#6750A4;
+    border:solid #E8DEF8;
+    background-color: #E8DEF8;
+    border-radius: 5px;
+    text-align: justify;
+    height: fit-content;
+    padding:5px;
+  }
+
+  #fmb{
+    margin-left: 20 px;
+    font-family: "Roboto";
+    font-weight: var(--md-outlined-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));
+    font-size:1rem;
+    color:#6750A4;
+    background-color: #E8DEF8;
+    border-radius: 5px;
+  }
+
+  legend{
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+  }
+
+  #radar{
+    width: fit-content;
+  }
+
+  #resZone{
+    margin-top: 20px;
+    align-items: center;
+    display:flex;
+  }
   .radar-chart .area {
     fill-opacity: 0.7;
   }
@@ -55,11 +97,17 @@
   <md-linear-progress id="progress" value="0"></md-linear-progress>
   <form id="mainForm">
     <p id="quizz" class="md-typescale-body-medium">Check out these controls in a form!</p>
-    <md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>
+    <!--<md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>
     <md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>
-    <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>
+    <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>-->
   </form>
-  <div id="radar"></div>
+  <div id="resZone">
+    <div id="radar"></div>
+    <fieldset id="fmb">
+      <legend>Ma posture épistémologique</legend>
+      <div id="mybelief"></div>
+    </fieldset>
+  </div>
   <style>
     form {
       display: flex;
@@ -83,17 +131,7 @@
     QUESTIONS = []
 
     loadQuestions()
-
-    // questions = ["Comment définiriez-vous la nature de la réalité ?",
-    // "Quelle est votre opinion sur la possibilité de connaître la réalité ?",
-    // "Comment considérez-vous la production de la connaissance scientifique ?",
-    // "Comment percevez-vous le rôle des valeurs personnelles et des croyances dans la formation des connaissances ?",
-    // "Comment évaluez-vous la validité de la connaissance scientifique produite ?",
-    // "Quelle est votre attitude envers les biais et la subjectivité dans la connaissance scientifique ?",
-    // "Quelle est votre attitude envers le rôle des contextes sociaux et historique dans la production de la connaissance ?",
-    // "Comment percevez-vous la relation entre théorie et observation ?"
-    // ]
-
+    
         
     initQuizz()
 
@@ -119,13 +157,71 @@
 
         for (i in items)
         {
-         quizzButtons.push('<md-outlined-button type="reset" data-symb="'+items[i].i_symb+'">'+items[i].i_title+'</md-outlined-button>')
+         quizzButtons.push('<md-outlined-button type="reset" data-symb="'+items[i].i_id+'">'+items[i].i_title+'</md-outlined-button>')
         }
 
         if(RANDOMIZE_ITEMS)
           shuffleArray(quizzButtons)
 
         QUIZZ_ELEMENT.innerHTML = quizzQ + quizzButtons.join("")
+        updateMyBelief()
+    }
+
+    function updateMyBelief()
+    {
+      let Final_Connectors = Array("Enfin, ", "Finalement, ", "Pour finir, ")
+      //let Opinion_Connectors = Array("je pense que ", "selon moi, ", "pour moi, ", "pour moi, je pense que ", "aussi, ", "il m'apparaît que ", "j'estime que ")
+      let Opinion_Connectors = Array("je pense que ", "il me semble que ", "pour moi, je pense que ", "il m'apparaît que ", "j'estime que ", "je croîs que ", "j'estime que ")
+      let beliefString = Opinion_Connectors[Math.floor(Math.random()*(Opinion_Connectors.length-4))]//Pick only the first three ones
+      beliefString = beliefString.charAt(0).toUpperCase() + beliefString.slice(1)
+
+      let arrProp = []
+
+      for(let [key,value] of ANSWERS)
+      {
+        if(value == NO_ANSWER)
+          continue
+
+        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_title == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
+      }
+
+      //Below, formatting of the belief ==> Could be replaced by a GPT if available and used to tell a story!
+
+      for(let prop = 0 ; prop < arrProp.length-1 ; prop++)
+      {
+        if(prop!=0 && Math.random()>0.65)
+        {
+          let conn = Opinion_Connectors[Math.floor(Math.random()*Opinion_Connectors.length)]
+          conn = conn.charAt(0).toUpperCase() + conn.slice(1)
+          
+          beliefString += " "+conn+arrProp[prop]
+        }
+        else
+        {
+          let posLastDot = beliefString.lastIndexOf(".")
+          if(posLastDot == -1)
+            beliefString += arrProp[prop]
+          else
+            beliefString = beliefString.slice(0,posLastDot)+", que " + arrProp[prop]
+        }
+      }
+      //Adding the last element to belief. The format depends on how many elements are in the sentences
+      if(arrProp.length > 2)
+        beliefString += " " + Final_Connectors[Math.floor(Math.random()*Final_Connectors.length)]+Opinion_Connectors[Math.floor(Math.random()*Opinion_Connectors.length)]+arrProp[arrProp.length-1]
+      else if(arrProp.length > 1)
+      {
+        let posLastDot = beliefString.lastIndexOf(".")
+        beliefString = beliefString.slice(0,posLastDot)+ " et que "+ beliefString.slice(posLastDot+1) + arrProp[arrProp.length-1]
+      }
+      else
+        beliefString += arrProp[arrProp.length-1]
+
+      if(arrProp.length == 0)
+        beliefString = ""
+      
+      //console.log(arrProp)
+      let beliefDiv = document.getElementById("mybelief")
+      beliefDiv.innerHTML=beliefString
     }
 
     function initQuizz()
@@ -161,14 +257,19 @@
         
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
         updateAnsweredCategories()
+
+        //displayLinearProgress()
+        displayRadar()
+    }
+
+    function displayLinearProgress()
+    {
         display = ""
         for(let[key,value] of ANSWERED_CATEGORIES)
         {
           display += '<p>'+key+' : <md-linear-progress id="progress" value="'+value/QUESTIONS.length+'"></md-linear-progress></p>'
         }
-
-        QUIZZ_ELEMENT.innerHTML+=display
-        displayRadar()
+      QUIZZ_ELEMENT.innerHTML+=display
     }
 
     function updateAnsweredCategories()
@@ -177,9 +278,26 @@
       for(let [key,val] of CATEGORIES)
         ANSWERED_CATEGORIES.set(key,0)
 
+      
       for(let [key,value] of ANSWERS)
       {
-        ANSWERED_CATEGORIES.set(value,ANSWERED_CATEGORIES.get(value)+1)
+        for(let i in QUESTIONS)
+        {
+          if(QUESTIONS[i].q_title == key)
+          {
+            for(let j in QUESTIONS[i].items)
+            {
+              if(QUESTIONS[i].items[j].i_id == value)
+              {
+                for(let k in QUESTIONS[i].items[j].categ)
+                {
+                  ANSWERED_CATEGORIES.set(QUESTIONS[i].items[j].categ[k].i_symb, ANSWERED_CATEGORIES.get(QUESTIONS[i].items[j].categ[k].i_symb)+QUESTIONS[i].items[j].categ[k].w)
+                }
+              }
+            }
+          }
+        }
+        //ANSWERED_CATEGORIES.set(value,ANSWERED_CATEGORIES.get(value)+1)
       }
       //return ANSWERED_CATEGORIES //@DEPRECATED return for legacy purpose
     }
@@ -202,9 +320,9 @@
         assert(true==false)
     }
 
-    function questionAnswered(symbClicked)
+    function questionAnswered(idClicked)
     {
-      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_title, symbClicked)
+      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_title, idClicked)
       
       //Going to next question
       CURRENT_QUESTION++
@@ -217,16 +335,35 @@
       q1 = { "q_title" : "Comment définiriez-vous la nature de la réalité ?",
           "items" : [
             {
-              "i_title": "La Réalité est objective et existe indépendamment de nos perceptions",
-              "i_symb": "Post-Positivisme"
+              "i_title": "La Réalité est objective et existe indépendamment de nos perceptions.",
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
             },
             {
-              "i_title": "La réalité est en partie construite socialement et subjectivement interprétée",
-              "i_symb": "Interprétativisme"
+              "i_title": "La réalité est en partie construite socialement et subjectivement interprétée.",
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                }
+              ]
             },
             {
-              "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde",
-              "i_symb" : "Réalisme Critique"
+              "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde.",
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                }
+              ]
             }
           ]
         }
@@ -235,15 +372,42 @@
           "items" : [
             {
               "i_title": "La réalité est connaissable de manière objective à travers des observations empiriques précises.",
-              "i_symb": "Post-Positivisme"
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
             },
             {
               "i_title": "La réalité est connaissable, mais nos observations sont influencées par nos théories et préjugés.",
-              "i_symb": "Constructivisme Pragmatique"
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
             },
             {
               "i_title": "La connaissance de la réalité est construite par les individus à travers leurs interactions et expériences pratiques.",
-              "i_symb" : "Réalisme Critique"
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Réalisme Critique",
+                  "w" : 3
+                }
+              ]
             }
           ]
         }
@@ -251,15 +415,42 @@
       "items" : [
         {
           "i_title": "La connaissance scientifique est produite par l'application rigoureuse de méthodes empiriques et expérimentales.",
-          "i_symb": "Constructivisme Pragmatique"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "La connaissance scientifique est produite en reconnaissant et en testant continuellement les théories pour mieux comprendre les biais et les limitations.",
-          "i_symb": "Post-Positivisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "La connaissance scientifique est produite à travers un processus de co-construction sociale, où les interactions entre les chercheurs et les participants jouent un rôle crucial.",
-          "i_symb" : "Interprétativisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         }
         
           ]
@@ -269,15 +460,42 @@
       "items" : [
         {
           "i_title": "Les valeurs personnelles doivent être mises de côté pour parvenir à une compréhension objective de la réalité.",
-          "i_symb": "Réalisme Critique"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "Les valeurs personnelles influencent inévitablement nos perspectives et nos interprétations.",
-          "i_symb": "Post-Positivisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "Les valeurs personnelles sont essentielles pour évaluer et interpréter les connaissances.",
-          "i_symb" : "Interprétativisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         }
         
           ]
@@ -286,16 +504,43 @@
         q5 = { "q_title" : "Comment évaluez-vous la validité de la connaissance scientifique produite ?",
       "items" : [
         {
-          "i_title": "Par leur capacité à prédire et à contrôler les phénomènes observables.",
-          "i_symb": "Constructivisme Pragmatique"
+          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à prédire et à contrôler les phénomènes observables.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
-          "i_title": "Par leur capacité à être testées et potentiellement falsifiées.",
-          "i_symb": "Réalisme Critique"
+          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à être testées et potentiellement falsifiées.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
-          "i_title": "Par leur utilité pratique et leur efficacité pour résoudre des problèmes réels.",
-          "i_symb" : "Interprétativisme"
+          "i_title": "La validité d'une connaissance scientifique tient par son utilité pratique et son efficacité pour résoudre des problèmes réels.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         }
         
           ]
@@ -305,15 +550,46 @@
       "items" : [
         {
           "i_title": "La subjectivité doit être minimisée pour parvenir à une compréhension objective de la réalité.",
-          "i_symb": "Post-Positivisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "Les biais sont inévitables, et il est important de les reconnaître et de les gérer.",
-          "i_symb": "Constructivisme Pragmatique"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
-          "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée",
-          "i_symb" : "Réalisme Critique"
+          "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée.",
+"categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Réalisme Critique",
+                  "w" : 4
+                }
+              ]
         }
         
           ]
@@ -323,15 +599,42 @@
       "items" : [
         {
           "i_title": "Les contextes sociaux et historiques sont secondaires par rapport aux faits empiriques.",
-          "i_symb": "Post-Positivisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
-          "i_title": "Ils sont importants car ils influencent nos observations et interprétations.",
-          "i_symb": "Interprétativisme"
+          "i_title": "Les contextes sociaux et historiques sont importants car ils influencent nos observations et interprétations.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
-          "i_title": "Ils sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
-          "i_symb" : "Constructivisme Pragmatique"
+          "i_title": "Les contextes sociaux et historiques sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         }
         
           ]
@@ -341,20 +644,51 @@
       "items" : [
         {
           "i_title": "Les observations empiriques doivent guider et valider les théories.",
-          "i_symb": "Réalisme Critique"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "Les théories influencent nos observations et doivent être testées constamment.",
-          "i_symb": "Constructivisme Pragmatique"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
         },
         {
           "i_title": "Les théories et les observations sont co-construites par les chercheurs et les participants.",
-          "i_symb" : "Post-Positivisme"
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Constructivisme Pragmatique",
+                  "w" : 1
+                }
+              ]
         }
         
           ]
         }
-
+            
       QUESTIONS.push(q1)
       QUESTIONS.push(q2)
       QUESTIONS.push(q3)
@@ -364,7 +698,13 @@
       QUESTIONS.push(q7)
       QUESTIONS.push(q8)
 
-      updateAvailableCategories()
+      //Creating an id for each i_title of each item of each question, using a (not secure!) hash function
+      for(i in QUESTIONS)
+       QUESTIONS[i].items = QUESTIONS[i].items.map(function(item){
+          return {i_title:item.i_title,i_id:hashCode(item.i_title),categ:item.categ}
+       })
+
+       updateAvailableCategories()
     }
 
     function updateAvailableCategories()
@@ -373,11 +713,14 @@
       {
         for(i in QUESTIONS[q].items)
         {
-          const csymb = QUESTIONS[q].items[i].i_symb
-          if(CATEGORIES.has(csymb))
-            CATEGORIES.set(csymb,CATEGORIES.get(csymb)+1)
-          else
-            CATEGORIES.set(csymb,1)
+          for(s in QUESTIONS[q].items[i].categ)
+          {
+            const csymb = QUESTIONS[q].items[i].categ[s].i_symb
+            if(CATEGORIES.has(csymb))
+              CATEGORIES.set(csymb,CATEGORIES.get(csymb)+1)
+            else
+              CATEGORIES.set(csymb,1)
+          }
         }
       }
     }
@@ -395,6 +738,22 @@
       return (Array.from(CATEGORIES, ([key,value]) => value).reduce((a,x) => a < x ? x : a ))
     }
 
+    /**
+     * Returns a hash code from a string
+     * @param  {String} str The string to hash.
+     * @return {Number}    A 32bit integer
+     * @see http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
+     */
+    function hashCode(str) {
+        let hash = 0;
+        for (let i = 0, len = str.length; i < len; i++) {
+            let chr = str.charCodeAt(i);
+            hash = (hash << 5) - hash + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
     function displayRadar()
     {
       resAxes = [{className:"result", axes:Array.from(ANSWERED_CATEGORIES,function([key,val]) { return {axis:key, value:val}})}]
@@ -403,8 +762,8 @@
       var cfg = chart.config(); // retrieve default config
       cfg.maxValue = maxOfAMap(ANSWERED_CATEGORIES)
       var svg = d3.select('#radar').append('svg')
-        .attr('width', cfg.w + cfg.w + 50)
-        .attr('height', cfg.h + cfg.h / 4);
+        .attr('width', cfg.w)// + cfg.w + 50)
+        .attr('height', cfg.h)// + cfg.h / 4);
       svg.append('g').classed('single', 1).datum(resAxes).call(chart);
       
       // // many radars
