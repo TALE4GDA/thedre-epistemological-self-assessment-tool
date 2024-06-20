@@ -1,5 +1,8 @@
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <script type="importmap">
     {
       "imports": {
@@ -25,6 +28,29 @@
   </style>
 
   <style>
+  #mybelief{
+    font-family: "Roboto";
+    font-weight: var(--md-outlined-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));
+    font-size:0.875rem;
+    color:#6750A4;
+    border:solid #E8DEF8;
+    background-color: #E8DEF8;
+    border-radius: 5px;
+    text-align: justify;
+    height: fit-content;
+    padding:5px;
+    margin-left : 20px;
+  }
+
+  #radar{
+    width: fit-content;
+  }
+
+  #resZone{
+    margin-top: 20px;
+    align-items: center;
+    display:flex;
+  }
   .radar-chart .area {
     fill-opacity: 0.7;
   }
@@ -55,12 +81,14 @@
   <md-linear-progress id="progress" value="0"></md-linear-progress>
   <form id="mainForm">
     <p id="quizz" class="md-typescale-body-medium">Check out these controls in a form!</p>
-    <md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>
+    <!--<md-outlined-button type="reset" onclick="Aclicked()">A</md-outlined-button>
     <md-outlined-button type="reset" onclick="Bclicked()">B</md-outlined-button>
-    <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>
+    <md-outlined-button type="reset"onclick="Cclicked()">C</md-outlined-button>-->
   </form>
-  <div id="mybelief"></div>
-  <div id="radar"></div>
+  <div id="resZone">
+    <div id="radar"></div>
+    <div id="mybelief"></div>
+  </div>
   <style>
     form {
       display: flex;
@@ -210,14 +238,19 @@
         
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
         updateAnsweredCategories()
+
+        //displayLinearProgress()
+        displayRadar()
+    }
+
+    function displayLinearProgress()
+    {
         display = ""
         for(let[key,value] of ANSWERED_CATEGORIES)
         {
           display += '<p>'+key+' : <md-linear-progress id="progress" value="'+value/QUESTIONS.length+'"></md-linear-progress></p>'
         }
-
-        QUIZZ_ELEMENT.innerHTML+=display
-        displayRadar()
+      QUIZZ_ELEMENT.innerHTML+=display
     }
 
     function updateAnsweredCategories()
@@ -710,8 +743,8 @@
       var cfg = chart.config(); // retrieve default config
       cfg.maxValue = maxOfAMap(ANSWERED_CATEGORIES)
       var svg = d3.select('#radar').append('svg')
-        .attr('width', cfg.w + cfg.w + 50)
-        .attr('height', cfg.h + cfg.h / 4);
+        .attr('width', cfg.w)// + cfg.w + 50)
+        .attr('height', cfg.h)// + cfg.h / 4);
       svg.append('g').classed('single', 1).datum(resAxes).call(chart);
       
       // // many radars
