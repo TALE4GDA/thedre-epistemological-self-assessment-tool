@@ -80,6 +80,9 @@
     fill: #ADD8E6;
     stroke: none;
   }
+  .centerMe{
+    margin: auto;
+  }
   </style>
 
   <script src="http://d3js.org/d3.v3.js"></script>
@@ -252,8 +255,8 @@
 
     function quizzEnd()
     {
-        QUIZZ_ELEMENT.innerHTML = '<p id="quizz" class="md-typescale-body-medium">Le quizz est fini.Merci.</p>'+
-        '<md-outlined-button type="reset" onclick="initQuizz()">Recommencer le quizz ?</md-outlined-button>'
+        QUIZZ_ELEMENT.innerHTML = '<p id="quizz" class="md-typescale-body-medium centerMe">Le quizz est fini.Merci.</p>'+
+        '<md-outlined-button class="centerMe" type="reset" onclick="initQuizz()">Recommencer le quizz ?</md-outlined-button>'
         
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
         updateAnsweredCategories()
