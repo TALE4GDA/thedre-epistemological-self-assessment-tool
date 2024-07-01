@@ -338,7 +338,7 @@
       q1 = { "q_title" : "Comment définiriez-vous la nature de la réalité ?",
           "items" : [
             {
-              "i_title": "La Réalité est objective et existe indépendamment de nos perceptions.",
+              "i_title": "La réalité existe indépendamment de l'humain.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -360,7 +360,7 @@
               ]
             },
             {
-              "i_title": "La réalité est une construction en constante évolution, influencée par nos interactions avec le monde.",
+              "i_title": "Des faits socialement construits non dirigés par des lois naturelles existent.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -374,7 +374,7 @@
       q2 = { "q_title" : "Quelle est votre opinion sur la possibilité de connaître la réalité ?",
           "items" : [
             {
-              "i_title": "La réalité est connaissable de manière objective à travers des observations empiriques précises.",
+              "i_title": "Le réel est connu avec une éventuelle défaillance des instruments de mesure.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -387,7 +387,7 @@
               ]
             },
             {
-              "i_title": "La réalité est connaissable, mais nos observations sont influencées par nos théories et préjugés.",
+              "i_title": "Le domaine réel n'est pas observable, des événements sont observables.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -400,7 +400,20 @@
               ]
             },
             {
-              "i_title": "La connaissance de la réalité est construite par les individus à travers leurs interactions et expériences pratiques.",
+              "i_title": "L'expérience humaine est observable dans le système auquel elle appartient.",
+              "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Réalisme Critique",
+                  "w" : 3
+                }
+              ]
+            },
+            {
+              "i_title": "Des faits sont produits comme une partie des interactions sociales entre des chercheurs et des individus.",
               "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -414,10 +427,10 @@
             }
           ]
         }
-      q3 = { "q_title" : "Comment considérez-vous la production de la connaissance scientifique ?",
+      q3 = { "q_title" : "Quel est l'objectif de la connaissance scientifique produite ?",
       "items" : [
         {
-          "i_title": "La connaissance scientifique est produite par l'application rigoureuse de méthodes empiriques et expérimentales.",
+          "i_title": "Identifier des régularités, des invariants.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -430,7 +443,7 @@
               ]
         },
         {
-          "i_title": "La connaissance scientifique est produite en reconnaissant et en testant continuellement les théories pour mieux comprendre les biais et les limitations.",
+          "i_title": "Identifier des mécanismes générateurs à l'origine des événements observés.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -443,7 +456,20 @@
               ]
         },
         {
-          "i_title": "La connaissance scientifique est produite à travers un processus de co-construction sociale, où les interactions entre les chercheurs et les participants jouent un rôle crucial.",
+          "i_title": "Construire des modèles intelligibles de l'expérience humaine offrant des repères adaptés.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "Comprendre comment les individus donnent du sens aux expériences sociales qu'ils vivent.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -459,7 +485,52 @@
           ]
         }
       
-      q4 = { "q_title" : "Comment percevez-vous le rôle des valeurs personnelles et des croyances dans la formation des connaissances ?",
+      q4 = { "q_title" : "Comment considérez-vous la production de la connaissance scientifique ?",
+      "items" : [
+        {
+          "i_title": "La connaissance scientifique est produite par l'application rigoureuse de méthodes expérimentales contrôlées.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "La connaissance scientifique est produite grâce l'observation d'événements dans le système auquel ils appartiennent.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "La connaissance scientifique est produite à travers un processus de co-construction sociale, où les interactions entre les chercheurs et les individus concourent à cette construction.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        }
+        
+          ]
+        }
+
+        q5 = { "q_title" : "Comment percevez-vous le rôle des valeurs personnelles et des croyances dans la formation des connaissances ?",
       "items" : [
         {
           "i_title": "Les valeurs personnelles doivent être mises de côté pour parvenir à une compréhension objective de la réalité.",
@@ -504,51 +575,6 @@
           ]
         }
 
-        q5 = { "q_title" : "Comment évaluez-vous la validité de la connaissance scientifique produite ?",
-      "items" : [
-        {
-          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à prédire et à contrôler les phénomènes observables.",
-          "categ": [
-                {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                }
-              ]
-        },
-        {
-          "i_title": "La validité d'une connaissance scientifique tient par sa capacité à être testées et potentiellement falsifiées.",
-          "categ": [
-                {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                }
-              ]
-        },
-        {
-          "i_title": "La validité d'une connaissance scientifique tient par son utilité pratique et son efficacité pour résoudre des problèmes réels.",
-          "categ": [
-                {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                }
-              ]
-        }
-        
-          ]
-        }
-
         q6 = { "q_title" : "Quelle est votre attitude envers les biais et la subjectivité dans la connaissance scientifique ?",
       "items" : [
         {
@@ -578,7 +604,7 @@
               ]
         },
         {
-          "i_title": "La subjectivité est une part essentielle de la construction de la connaissance : elle doit être explorée et valorisée.",
+          "i_title": "La subjectivité fait partie de la construction de la connaissance.",
 "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -601,7 +627,7 @@
         q7 = { "q_title" : "Quelle est votre attitude envers le rôle des contextes sociaux et historique dans la production de la connaissance ?",
       "items" : [
         {
-          "i_title": "Les contextes sociaux et historiques sont secondaires par rapport aux faits empiriques.",
+          "i_title": "Les contextes sociaux et historiques sont secondaires pour la construction de la connaissance.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -614,7 +640,7 @@
               ]
         },
         {
-          "i_title": "Les contextes sociaux et historiques sont importants car ils influencent nos observations et interprétations.",
+          "i_title": "Les contextes sociaux et historiques sont importants pour la construction de la connaissance.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -627,7 +653,7 @@
               ]
         },
         {
-          "i_title": "Les contextes sociaux et historiques sont fondamentaux car la connaissance est construite dans des contextes spécifiques.",
+          "i_title": "Les contextes sociaux et historiques sont fondamentaux pour la construction de la connaissance.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -643,10 +669,10 @@
           ]
         }
 
-        q8 = { "q_title" : "Comment percevez-vous la relation entre théorie et observation ?",
+        q8 = { "q_title" : "Quel matériau empirique est mobilisé pour construire la connaissance ?",
       "items" : [
         {
-          "i_title": "Les observations empiriques doivent guider et valider les théories.",
+          "i_title": "Pour construire et valider des connaissances scientifiques, des données quantitatives sont élaborées à partir de plans expérimentaux contrôlés.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -659,7 +685,7 @@
               ]
         },
         {
-          "i_title": "Les théories influencent nos observations et doivent être testées constamment.",
+          "i_title": "Pour construire et valider des connaissances scientifiques, des observations d'évènements dans leur contexte sont conduites.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -672,7 +698,154 @@
               ]
         },
         {
-          "i_title": "Les théories et les observations sont co-construites par les chercheurs et les participants.",
+          "i_title": "Pour construire et valider la connaissance scientifique, des narrations des individus sont recueillies.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Constructivisme Pragmatique",
+                  "w" : 1
+                }
+              ]
+        }
+        
+          ]
+        }
+
+        q9 = { "q_title" : "Quelle forme prend la connaissance ?",
+      "items" : [
+        {
+          "i_title": "La connaissance scientifique prend la forme d'énoncés réfutables, d'invariants.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "La connaissance scientifique prend la forme de modèles génériques, de leur mode d'activation en contexte et d'outils pragmatiques.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "La connaissance scientifique prend la forme de narrations soutenues par des descriptions de l'expérience vécue lors des interactions avec les individus.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Constructivisme Pragmatique",
+                  "w" : 1
+                }
+              ]
+        }
+        
+          ]
+        }
+
+        q10 = { "q_title" : "Sur quoi repose la fiabilité des résultats ?",
+      "items" : [
+        {
+          "i_title": "La réplication et la fiabilité des mesures reposent sur le protocole et les données.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "Sur l’intelligibilité du cheminement cognitif à partir du matériau empirique, sur la traçabilité du processus de recherche.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "Sur l’explicitation de la manière dont les interprétations ont été vérifiées.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Constructivisme Pragmatique",
+                  "w" : 1
+                }
+              ]
+        }
+        
+          ]
+        }
+
+        q11 = { "q_title" : "Comment la connaissance est-elle mise à l'épreuve ?",
+      "items" : [
+        {
+          "i_title": "Des tests statistiques sont réalisés pour valider ou invalider des hypothèses.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "Le modèle et ses effets sont testés dans des contextes différents.",
+          "categ": [
+                {
+                  "i_symb": "Post-Positivisme",
+                  "w" : 1
+                },
+                {
+                  "i_symb" : "Interprétativisme",
+                  "w" : 1
+                }
+              ]
+        },
+        {
+          "i_title": "Pas de mise à l'épreuve.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
