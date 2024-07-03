@@ -186,7 +186,7 @@
         if(value == NO_ANSWER)
           continue
 
-        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_title == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
+        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_id == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
       }
 
       //Below, formatting of the belief ==> Could be replaced by a GPT if available and used to tell a story!
@@ -233,7 +233,7 @@
       ANSWERS = new Map()
       for(q in QUESTIONS)
       {
-          ANSWERS.set(QUESTIONS[q].q_title,NO_ANSWER)
+          ANSWERS.set(QUESTIONS[q].q_id,NO_ANSWER)
       }
 
       if(RANDOMIZE_QUESTIONS)
@@ -264,6 +264,8 @@
 
         //displayLinearProgress()
         displayRadar()
+
+        exporter()
     }
 
     function displayLinearProgress()
@@ -287,7 +289,7 @@
       {
         for(let i in QUESTIONS)
         {
-          if(QUESTIONS[i].q_title == key)
+          if(QUESTIONS[i].q_id == key)
           {
             for(let j in QUESTIONS[i].items)
             {
@@ -326,11 +328,21 @@
 
     function questionAnswered(idClicked)
     {
-      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_title, idClicked)
+      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_id, idClicked)
       
       //Going to next question
       CURRENT_QUESTION++
       update()
+    }
+
+    //EXPORTER
+    function exporter()
+    {
+      //Struct of the export :
+      // |- Lists of Q (and subItems with id from hash)
+      // |- ANSWERS 
+
+      console.log(ANSWERS)
     }
 
     //IMPORTER
@@ -676,10 +688,10 @@
           ]
         }
 
-        q10 = { "q_title" : "Sur quoi repose la fiabilité des résultats ?",
+        q10 = { "q_title" : "Sur quoi repose la fiabilité du processus de production et d’analyse des données ?",
       "items" : [
         {
-          "i_title": "La réplication et la fiabilité des mesures reposent sur le protocole et les données.",
+          "i_title": "Sur la capacité à pouvoir reproduire les résultats expérimentauxLa réplication et la fiabilité des mesures reposent sur le protocole et les données.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -688,7 +700,7 @@
               ]
         },
         {
-          "i_title": "Sur l’intelligibilité du cheminement cognitif à partir du matériau empirique, sur la traçabilité du processus de recherche.",
+          "i_title": "Sur la description du cheminement cognitif et sa traçabilité.",
           "categ": [
           {
                   "i_symb": "Constructivisme Pragmatique",
@@ -701,7 +713,7 @@
               ]
         },
         {
-          "i_title": "Sur l’explicitation de la manière dont les interprétations ont été vérifiées.",
+          "i_title": "Sur le recueil de nombreuses narrations et la manière dont les interprétations des narrations sont vérifiées.",
           "categ": [
                 {
                   "i_symb" : "Interprétativiste",
@@ -764,10 +776,14 @@
 
       //Creating an id for each i_title of each item of each question, using a (not secure!) hash function
       for(i in QUESTIONS)
-       QUESTIONS[i].items = QUESTIONS[i].items.map(function(item){
-          return {i_title:item.i_title,i_id:hashCode(item.i_title),categ:item.categ}
-       })
+      {
+        QUESTIONS[i].q_id = hashCode(QUESTIONS[i].q_title)
+        QUESTIONS[i].items = QUESTIONS[i].items.map(function(item){
+            return {i_title:item.i_title,i_id:hashCode(item.i_title),categ:item.categ}
+        })
+      }
 
+       
        updateAvailableCategories()
     }
 
