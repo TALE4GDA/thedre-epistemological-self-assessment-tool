@@ -123,6 +123,7 @@
   <script>
     NO_ANSWER = "X"
     CURRENT_QUESTION = 0
+    MY_BELIEF = ""
 
     QUIZZ_ELEMENT = document.getElementById("mainForm")
 
@@ -224,6 +225,7 @@
         beliefString = ""
       
       //console.log(arrProp)
+      MY_BELIEF = beliefString
       let beliefDiv = document.getElementById("mybelief")
       beliefDiv.innerHTML=beliefString
     }
@@ -341,8 +343,27 @@
       //Struct of the export :
       // |- Lists of Q (and subItems with id from hash)
       // |- ANSWERS 
+      let myexport = {}
+      myexport.questions = JSON.stringify(QUESTIONS)
+      myexport.answers = JSON.stringify(Object.fromEntries(ANSWERS))
+      myexport.belief = JSON.stringify(MY_BELIEF)
 
-      console.log(ANSWERS)
+      var filename = "quizz_esat_results_"+Date.now()+".json"
+      var file = new Blob([JSON.stringify(myexport)], {type: "text/json"});
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+      else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+      }
     }
 
     //IMPORTER
