@@ -85,7 +85,8 @@
   }
   </style>
 
-  <script src="http://d3js.org/d3.v3.js"></script>
+  <!--Radar diagram-->
+  <script src="./d3.v3.js"></script>
   <script src="./radar-chart.js"></script>
   <script>
     RadarChart.defaultConfig.color = function() {};
@@ -122,6 +123,7 @@
   <script>
     NO_ANSWER = "X"
     CURRENT_QUESTION = 0
+    MY_BELIEF = ""
 
     QUIZZ_ELEMENT = document.getElementById("mainForm")
 
@@ -185,7 +187,7 @@
         if(value == NO_ANSWER)
           continue
 
-        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_title == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
+        arrProp.push(((QUESTIONS.reduce((a,x) => x.q_id == key ? x : a).items.reduce( (b,y) => y.i_id == value ? y : b).i_title)).toLowerCase()) //HF ;)
       }
 
       //Below, formatting of the belief ==> Could be replaced by a GPT if available and used to tell a story!
@@ -223,6 +225,7 @@
         beliefString = ""
       
       //console.log(arrProp)
+      MY_BELIEF = beliefString
       let beliefDiv = document.getElementById("mybelief")
       beliefDiv.innerHTML=beliefString
     }
@@ -232,7 +235,7 @@
       ANSWERS = new Map()
       for(q in QUESTIONS)
       {
-          ANSWERS.set(QUESTIONS[q].q_title,NO_ANSWER)
+          ANSWERS.set(QUESTIONS[q].q_id,NO_ANSWER)
       }
 
       if(RANDOMIZE_QUESTIONS)
@@ -263,6 +266,8 @@
 
         //displayLinearProgress()
         displayRadar()
+
+        exporter()
     }
 
     function displayLinearProgress()
@@ -286,7 +291,7 @@
       {
         for(let i in QUESTIONS)
         {
-          if(QUESTIONS[i].q_title == key)
+          if(QUESTIONS[i].q_id == key)
           {
             for(let j in QUESTIONS[i].items)
             {
@@ -325,11 +330,40 @@
 
     function questionAnswered(idClicked)
     {
-      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_title, idClicked)
+      ANSWERS.set(QUESTIONS[CURRENT_QUESTION].q_id, idClicked)
       
       //Going to next question
       CURRENT_QUESTION++
       update()
+    }
+
+    //EXPORTER
+    function exporter()
+    {
+      //Struct of the export :
+      // |- Lists of Q (and subItems with id from hash)
+      // |- ANSWERS 
+      let myexport = {}
+      myexport.questions = JSON.stringify(QUESTIONS)
+      myexport.answers = JSON.stringify(Object.fromEntries(ANSWERS))
+      myexport.belief = JSON.stringify(MY_BELIEF)
+
+      var filename = "quizz_esat_results_"+Date.now()+".json"
+      var file = new Blob([JSON.stringify(myexport)], {type: "text/json"});
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+      else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+      }
     }
 
     //IMPORTER
@@ -343,10 +377,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
             },
@@ -354,7 +384,11 @@
               "i_title": "La réalité est en partie construite socialement et subjectivement interprétée.",
               "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
+                  "w" : 1
+                },
+                {
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -363,7 +397,7 @@
               "i_title": "Des faits socialement construits non dirigés par des lois naturelles existent.",
               "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -379,10 +413,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
             },
@@ -390,25 +420,17 @@
               "i_title": "Le domaine réel n'est pas observable, des événements sont observables.",
               "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                }
               ]
             },
             {
               "i_title": "L'expérience humaine est observable dans le système auquel elle appartient.",
               "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Réalisme Critique",
-                  "w" : 3
                 }
               ]
             },
@@ -416,11 +438,7 @@
               "i_title": "Des faits sont produits comme une partie des interactions sociales entre des chercheurs et des individus.",
               "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Réalisme Critique",
+                  "i_symb" : "Interprétativiste",
                   "w" : 3
                 }
               ]
@@ -435,10 +453,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -446,11 +460,7 @@
           "i_title": "Identifier des mécanismes générateurs à l'origine des événements observés.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -459,11 +469,7 @@
           "i_title": "Construire des modèles intelligibles de l'expérience humaine offrant des repères adaptés.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 }
               ]
@@ -472,11 +478,7 @@
           "i_title": "Comprendre comment les individus donnent du sens aux expériences sociales qu'ils vivent.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -493,10 +495,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -504,11 +502,11 @@
           "i_title": "La connaissance scientifique est produite grâce l'observation d'événements dans le système auquel ils appartiennent.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -517,11 +515,7 @@
           "i_title": "La connaissance scientifique est produite à travers un processus de co-construction sociale, où les interactions entre les chercheurs et les individus concourent à cette construction.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -538,10 +532,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -549,11 +539,11 @@
           "i_title": "Les valeurs personnelles influencent inévitablement nos perspectives et nos interprétations.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -562,11 +552,7 @@
           "i_title": "Les valeurs personnelles sont essentielles pour évaluer et interpréter les connaissances.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -583,10 +569,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -594,11 +576,11 @@
           "i_title": "Les biais sont inévitables, et il est important de les reconnaître et de les gérer.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -607,16 +589,8 @@
           "i_title": "La subjectivité fait partie de la construction de la connaissance.",
 "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Réalisme Critique",
-                  "w" : 4
                 }
               ]
         }
@@ -632,10 +606,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -643,11 +613,11 @@
           "i_title": "Les contextes sociaux et historiques sont importants pour la construction de la connaissance.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -656,11 +626,7 @@
           "i_title": "Les contextes sociaux et historiques sont fondamentaux pour la construction de la connaissance.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -677,10 +643,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -688,11 +650,11 @@
           "i_title": "Pour construire et valider des connaissances scientifiques, des observations d'évènements dans leur contexte sont conduites.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -701,15 +663,7 @@
           "i_title": "Pour construire et valider la connaissance scientifique, des narrations des individus sont recueillies.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Constructivisme Pragmatique",
+                  "i_symb": "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -726,10 +680,6 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
@@ -737,11 +687,11 @@
           "i_title": "La connaissance scientifique prend la forme de modèles génériques, de leur mode d'activation en contexte et d'outils pragmatiques.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -750,15 +700,7 @@
           "i_title": "La connaissance scientifique prend la forme de narrations soutenues par des descriptions de l'expérience vécue lors des interactions avec les individus.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Constructivisme Pragmatique",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -767,47 +709,35 @@
           ]
         }
 
-        q10 = { "q_title" : "Sur quoi repose la fiabilité des résultats ?",
+        q10 = { "q_title" : "Sur quoi repose la fiabilité du processus de production et d’analyse des données ?",
       "items" : [
         {
-          "i_title": "La réplication et la fiabilité des mesures reposent sur le protocole et les données.",
+          "i_title": "Sur la capacité à pouvoir reproduire les résultats expérimentauxLa réplication et la fiabilité des mesures reposent sur le protocole et les données.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
                   "w" : 1
                 }
               ]
         },
         {
-          "i_title": "Sur l’intelligibilité du cheminement cognitif à partir du matériau empirique, sur la traçabilité du processus de recherche.",
+          "i_title": "Sur la description du cheminement cognitif et sa traçabilité.",
           "categ": [
-                {
-                  "i_symb": "Post-Positivisme",
+          {
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
         },
         {
-          "i_title": "Sur l’explicitation de la manière dont les interprétations ont été vérifiées.",
+          "i_title": "Sur le recueil de nombreuses narrations et la manière dont les interprétations des narrations sont vérifiées.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Constructivisme Pragmatique",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -824,22 +754,18 @@
                 {
                   "i_symb": "Post-Positivisme",
                   "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
                 }
               ]
         },
         {
           "i_title": "Le modèle et ses effets sont testés dans des contextes différents.",
           "categ": [
-                {
-                  "i_symb": "Post-Positivisme",
+              {
+                  "i_symb": "Constructivisme Pragmatique",
                   "w" : 1
                 },
                 {
-                  "i_symb" : "Interprétativisme",
+                  "i_symb": "Réalisme Critique",
                   "w" : 1
                 }
               ]
@@ -848,15 +774,7 @@
           "i_title": "Pas de mise à l'épreuve.",
           "categ": [
                 {
-                  "i_symb": "Post-Positivisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Interprétativisme",
-                  "w" : 1
-                },
-                {
-                  "i_symb" : "Constructivisme Pragmatique",
+                  "i_symb" : "Interprétativiste",
                   "w" : 1
                 }
               ]
@@ -873,13 +791,20 @@
       QUESTIONS.push(q6)
       QUESTIONS.push(q7)
       QUESTIONS.push(q8)
+      QUESTIONS.push(q9)
+      QUESTIONS.push(q10)
+      QUESTIONS.push(q11)
 
       //Creating an id for each i_title of each item of each question, using a (not secure!) hash function
       for(i in QUESTIONS)
-       QUESTIONS[i].items = QUESTIONS[i].items.map(function(item){
-          return {i_title:item.i_title,i_id:hashCode(item.i_title),categ:item.categ}
-       })
+      {
+        QUESTIONS[i].q_id = hashCode(QUESTIONS[i].q_title)
+        QUESTIONS[i].items = QUESTIONS[i].items.map(function(item){
+            return {i_title:item.i_title,i_id:hashCode(item.i_title),categ:item.categ}
+        })
+      }
 
+       
        updateAvailableCategories()
     }
 
