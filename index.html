@@ -270,11 +270,10 @@
       def = EPISTEMOLOGY_STAND_DEF[getMaxAnsweredCategories()]
 
       // display button OUI NON si ok avec la def
-      QUIZZ_ELEMENT.innerHTML = '<div id="standDisplay">Il sembleraît que vous soyez <strong>'+getMaxAnsweredCategories()+'</strong></div>'+
-      '<div id="epStandDef">'+EPISTEMOLOGY_STAND_DEF[getMaxAnsweredCategories()]+'</div><div>Vous reconnaissez-vous dans cette description ?<br/>'+
-      '<md-outlined-button class="centerMe" type="reset" onclick="okWithStand()">Oui 👍</md-outlined-button>' +
-      '<md-outlined-button class="centerMe" type="reset" onclick="notOkWithStand()">Non 👎</md-outlined-button>'+
-      '</div>'
+      QUIZZ_ELEMENT.innerHTML = '<div id="standDisplay" class="centerMe">Il sembleraît que votre posture épistémologique soit <strong>'+getMaxAnsweredCategories()+'</strong></div>'+
+      '<div id="epStandDef" class="centerMe">'+EPISTEMOLOGY_STAND_DEF[getMaxAnsweredCategories()]+'</div><div class="centerMe">Vous reconnaissez-vous dans cette description ?</div>'+
+      '<div class="centerMe"><md-outlined-button class="centerMe" type="reset" onclick="okWithStand()">Oui 👍</md-outlined-button>' +
+      '<md-outlined-button class="centerMe" type="reset" onclick="notOkWithStand()">Non 👎</md-outlined-button></div>'
     }
 
     function okWithStand(){
