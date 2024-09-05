@@ -1,4 +1,5 @@
 <head>
+  <title>ESAT Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -124,18 +125,21 @@
     NO_ANSWER = "X"
     CURRENT_QUESTION = 0
     MY_BELIEF = ""
+    DO_I_AGREE_WITH_MY_STAND = false
 
     QUIZZ_ELEMENT = document.getElementById("mainForm")
 
-    RANDOMIZE_QUESTIONS = true
+    RANDOMIZE_QUESTIONS = false
     RANDOMIZE_ITEMS = true
 
     CATEGORIES = new Map() //Used know the different categories existing to classify the user answers in the end. Used in the radar
     ANSWERED_CATEGORIES = new Map()
+    EPISTEMOLOGY_STAND_DEF = new Map()
 
     QUESTIONS = []
 
     loadQuestions()
+    loadEpistemologyStands()
     
         
     initQuizz()
@@ -148,7 +152,8 @@
 
         if(val == 1.0)
         {
-          quizzEnd()
+          //quizzEnd()
+          announceOfEpistemologyStand()
           return; // RETURN IF END ! Otherwise continue
         }
 
@@ -256,13 +261,39 @@
         questionAnswered(event.target.dataset.symb)
     }
 
+    function announceOfEpistemologyStand()
+    {
+      updateAnsweredCategories()
+
+      // Here, display stand and def.
+      res = "Vous êtes "+getMaxAnsweredCategories()
+      def = EPISTEMOLOGY_STAND_DEF[getMaxAnsweredCategories()]
+
+      // display button OUI NON si ok avec la def
+      QUIZZ_ELEMENT.innerHTML = '<div id="standDisplay">Il sembleraît que vous soyez <strong>'+getMaxAnsweredCategories()+'</strong></div>'+
+      '<div id="epStandDef">'+EPISTEMOLOGY_STAND_DEF[getMaxAnsweredCategories()]+'</div><div>Vous reconnaissez-vous dans cette description ?<br/>'+
+      '<md-outlined-button class="centerMe" type="reset" onclick="okWithStand()">Oui 👍</md-outlined-button>' +
+      '<md-outlined-button class="centerMe" type="reset" onclick="notOkWithStand()">Non 👎</md-outlined-button>'+
+      '</div>'
+    }
+
+    function okWithStand(){
+      DO_I_AGREE_WITH_MY_STAND = true
+      quizzEnd()
+    }
+
+    function notOkWithStand(){
+      DO_I_AGREE_WITH_MY_STAND = false
+      quizzEnd()
+    }
+    
     function quizzEnd()
     {
         QUIZZ_ELEMENT.innerHTML = '<p id="quizz" class="md-typescale-body-medium centerMe">Le quizz est fini.Merci.</p>'+
         '<md-outlined-button class="centerMe" type="reset" onclick="initQuizz()">Recommencer le quizz ?</md-outlined-button>'
         
         //SHOULD DISPLAY THE NUMBER OF ANSWERS BY ITEM
-        updateAnsweredCategories()
+        // updateAnsweredCategories()
 
         //displayLinearProgress()
         displayRadar()
@@ -347,6 +378,9 @@
       myexport.questions = JSON.stringify(QUESTIONS)
       myexport.answers = JSON.stringify(Object.fromEntries(ANSWERS))
       myexport.belief = JSON.stringify(MY_BELIEF)
+      myexport.scores = JSON.stringify(Object.fromEntries(ANSWERED_CATEGORIES))
+      myexport.main = JSON.stringify(getMaxAnsweredCategories())
+      myexport.agree = JSON.stringify(DO_I_AGREE_WITH_MY_STAND)
 
       var filename = "quizz_esat_results_"+Date.now()+".json"
       var file = new Blob([JSON.stringify(myexport)], {type: "text/json"});
@@ -367,6 +401,23 @@
 
 
       setTimeout(() => {print()},300) //in addition, open print dialog box
+    }
+
+    function getMaxAnsweredCategories()
+    {
+      resV = -1
+      resK = -1
+
+      for(let [key,value] of ANSWERED_CATEGORIES)
+      {
+        if(resV < value)
+        {
+          resV = value
+          resK = key
+        }
+      }
+
+      return resK
     }
 
     //IMPORTER
@@ -451,7 +502,7 @@
       q3 = { "q_title" : "Quel est l'objectif de la connaissance scientifique produite ?",
       "items" : [
         {
-          "i_title": "Identifier des régularités, des invariants.",
+          "i_title": "L'objectif de la connaissance scientifique est d'identifier des régularités, des invariants.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -460,7 +511,7 @@
               ]
         },
         {
-          "i_title": "Identifier des mécanismes générateurs à l'origine des événements observés.",
+          "i_title": "L'objectif de la connaissance scientifique est d'identifier des mécanismes générateurs à l'origine des événements observés.",
           "categ": [
                 {
                   "i_symb": "Réalisme Critique",
@@ -469,7 +520,7 @@
               ]
         },
         {
-          "i_title": "Construire des modèles intelligibles de l'expérience humaine offrant des repères adaptés.",
+          "i_title": "L'objectif de la connaissance scientifique est de construire des modèles intelligibles de l'expérience humaine offrant des repères adaptés.",
           "categ": [
                 {
                   "i_symb": "Constructivisme Pragmatique",
@@ -478,7 +529,7 @@
               ]
         },
         {
-          "i_title": "Comprendre comment les individus donnent du sens aux expériences sociales qu'ils vivent.",
+          "i_title": "L'objectif de la connaissance scientifique est de comprendre comment les individus donnent du sens aux expériences sociales qu'ils vivent.",
           "categ": [
                 {
                   "i_symb": "Interprétativiste",
@@ -715,7 +766,7 @@
         q10 = { "q_title" : "Sur quoi repose la fiabilité du processus de production et d’analyse des données ?",
       "items" : [
         {
-          "i_title": "Sur la capacité à pouvoir reproduire les résultats expérimentauxLa réplication et la fiabilité des mesures reposent sur le protocole et les données.",
+          "i_title": "La fiabilité de production et d'analyse des données repose sur la capacité à pouvoir reproduire les résultats expérimentauxLa réplication et la fiabilité des mesures reposent sur le protocole et les données.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -724,7 +775,7 @@
               ]
         },
         {
-          "i_title": "Sur la description du cheminement cognitif et sa traçabilité.",
+          "i_title": "La fiabilité de production et d'analyse des données repose sur la description du cheminement cognitif et sa traçabilité.",
           "categ": [
           {
                   "i_symb": "Constructivisme Pragmatique",
@@ -737,7 +788,7 @@
               ]
         },
         {
-          "i_title": "Sur le recueil de nombreuses narrations et la manière dont les interprétations des narrations sont vérifiées.",
+          "i_title": "La fiabilité de production et d'analyse des données repose sur le recueil de nombreuses narrations et la manière dont les interprétations des narrations sont vérifiées.",
           "categ": [
                 {
                   "i_symb" : "Interprétativiste",
@@ -752,7 +803,7 @@
         q11 = { "q_title" : "Comment la connaissance est-elle mise à l'épreuve ?",
       "items" : [
         {
-          "i_title": "Des tests statistiques sont réalisés pour valider ou invalider des hypothèses.",
+          "i_title": "Des tests statistiques sont réalisés pour valider ou invalider des hypothèses, permettant de tester la connaissance.",
           "categ": [
                 {
                   "i_symb": "Post-Positivisme",
@@ -761,7 +812,7 @@
               ]
         },
         {
-          "i_title": "Le modèle et ses effets sont testés dans des contextes différents.",
+          "i_title": "Pour éprouver la connaissance, le modèle et ses effets doivent être testés dans des contextes différents.",
           "categ": [
               {
                   "i_symb": "Constructivisme Pragmatique",
@@ -774,7 +825,7 @@
               ]
         },
         {
-          "i_title": "Pas de mise à l'épreuve.",
+          "i_title": "Il n'y a pas besoin de mettre à l'épreuve la connaissance une fois produite.",
           "categ": [
                 {
                   "i_symb" : "Interprétativiste",
@@ -809,6 +860,26 @@
 
        
        updateAvailableCategories()
+    }
+
+    function loadEpistemologyStands()
+    {
+      // Post-Positivisme
+      def = "Le post-positivisme est une posture épistémologique qui considère que la connaissance scientifique est toujours incertaine et sujette à révision. Il reconnaît que les observations sont influencées par des biais et des contextes théoriques, et que la recherche doit être guidée par une approche critique et réflexive. Le post-positivisme met l'accent sur la rigueur méthodologique, l'importance de la triangulation des données et l'idée que les théories ne sont jamais définitivement prouvées, mais peuvent être continuellement testées et améliorées pour mieux refléter la réalité."
+      EPISTEMOLOGY_STAND_DEF["Post-Positivisme"] = def
+
+      // Constructivisme Pragmatique
+      def = "Le constructivisme pragmatique est une posture épistémologique qui considère que la connaissance est activement construite par les individus à travers leurs expériences, interactions sociales et contextes spécifiques. Elle met l’accent sur l’utilité et l’efficacité de la connaissance dans la résolution de problèmes réels, plutôt que sur une quête de vérité absolue. La valeur d’une idée ou d’une théorie est évaluée en fonction de son application pratique et de sa capacité à produire des résultats concrets dans des situations données, tout en tenant compte des perspectives et des constructions sociales des acteurs impliqués."
+      EPISTEMOLOGY_STAND_DEF["Constructivisme Pragmatique"] = def
+
+      // Interprétativisme
+      def = "L'interprétativisme est une posture épistémologique qui soutient que la réalité sociale est construite par les significations et les interprétations des individus. Elle se concentre sur la compréhension des expériences humaines, des croyances et des pratiques culturelles, en tenant compte du contexte historique et social. L’interprétativisme privilégie les méthodes qualitatives et cherche à saisir la perspective subjective des acteurs pour accéder à une compréhension profonde des phénomènes sociaux. Cette approche valorise l'analyse des significations partagées et des interactions symboliques qui façonnent la réalité perçue par les individus."
+      EPISTEMOLOGY_STAND_DEF["Interprétativiste"] = def
+
+      // Réalisme Critique
+      def = "Le réalisme critique est une posture épistémologique qui affirme l'existence d'une réalité objective indépendante de notre perception, tout en reconnaissant que notre connaissance de cette réalité est toujours partielle et médiée par nos concepts, théories et interprétations. Il distingue entre le monde réel (structures, mécanismes) et notre connaissance (représentations, perceptions) de ce monde. Le réalisme critique cherche à identifier les structures et les causes sous-jacentes aux phénomènes observables, en considérant à la fois les dimensions empiriques et les contextes sociaux qui influencent notre compréhension du réel."
+      EPISTEMOLOGY_STAND_DEF["Réalisme Critique"] = def
+
     }
 
     function updateAvailableCategories()
